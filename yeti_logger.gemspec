@@ -23,6 +23,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake"
   spec.add_development_dependency "rspec"
   spec.add_development_dependency "yard"
-  spec.add_development_dependency "redcarpet"
+  spec.add_development_dependency "kramdown"
   spec.add_development_dependency "simplecov"
 end

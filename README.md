@@ -2,6 +2,8 @@
 
 Provides standardized logging across Yesware apps.
 
+[![Build Status](https://travis-ci.org/Yesware/yeti_logger.svg?branch=master)](https://travis-ci.org/Yesware/yeti_logger)
+
 ## Installation
 
 Add this line to your application's Gemfile:

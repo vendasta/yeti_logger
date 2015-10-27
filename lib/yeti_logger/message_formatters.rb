@@ -17,7 +17,7 @@ module YetiLogger::MessageFormatters
   # @param klass [String] Name of the class you are logging on behalf
   # @param obj [Object] Object to log, may be nil
   # @param exception [Exception] Optional exception to include in the log message
-  # @return string [String] to log
+  # @return [String] to log
   def self.build_log_message(klass, obj, exception = nil, backtrace_lines = NUM_LINES_OF_EXCEPTIONS)
     msg = if obj.is_a?(Hash)
             if exception
