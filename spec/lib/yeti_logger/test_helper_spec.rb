@@ -121,6 +121,95 @@ describe YetiLogger::TestHelper do
 
   end
 
+  describe '.expect_to_not_see_log_messages' do
+    it 'has a singular form' do
+      expect_to_not_see_log_message('YetiLogger::TestLogger: foo', :warn) do
+        instance.log_warn('bar')
+      end
+    end
+
+    it 'checks for multiple messages' do
+      messages = [
+                  'YetiLogger::TestLogger: one',
+                  'YetiLogger::TestLogger: two'
+                 ]
+      expect_to_not_see_log_messages(messages, :info) do
+        instance.log_info('three')
+        instance.log_info('four')
+      end
+    end
+
+    it 'only stubs the log level you request' do
+      expect(YetiLogger.logger).to receive(:info).with('YetiLogger::TestLogger: msg')
+
+      expect_to_not_see_log_message('YetiLogger::TestLogger: msg', :warn) do
+        instance.log_info { 'msg' }
+        instance.log_error { 'msg' }
+      end
+    end
+
+    it 'supports regexes' do
+      messages = [
+                  'YetiLogger::TestLogger: one',
+                  /two-\d/,
+                  'YetiLogger::TestLogger: three'
+                 ]
+      expect_to_not_see_log_messages(messages, :info) do
+        instance.log_info('four')
+        instance.log_info('five')
+      end
+    end
+
+    it 'fails when it finds the string message' do
+      expect do
+        message = 'YetiLogger::TestLogger: should not be there'
+        expect_to_not_see_log_message(message, :info) do
+          instance.log_info('should not be there')
+        end
+      end.to raise_exception(RuntimeError)
+    end
+
+    it 'fails when it matches the regexp message' do
+      expect do
+        expect_to_not_see_log_message(/bazinga/, :info) do
+          instance.log_info('bazinga, punk!')
+        end
+      end.to raise_exception(RuntimeError)
+    end
+
+    it 'fails when it finds one of the string messages' do
+      expect do
+        messages = [
+                    'YetiLogger::TestLogger: one',
+                    /two-\d/,
+                    'YetiLogger::TestLogger: three',
+                    'YetiLogger::TestLogger: four'
+                   ]
+        expect_to_not_see_log_messages(messages, :info) do
+          instance.log_info('one')
+          instance.log_info('five')
+          instance.log_info('six')
+        end
+      end.to raise_exception(RuntimeError)
+    end
+
+    it 'fails when it finds matches one of the regexps' do
+      expect do
+        messages = [
+                    'YetiLogger::TestLogger: one',
+                    /two-\d/,
+                    /three/,
+                    'YetiLogger::TestLogger: four'
+                   ]
+        expect_to_not_see_log_messages(messages, :info) do
+          instance.log_info('two-2')
+          instance.log_info('five')
+          instance.log_info('six')
+        end
+      end.to raise_exception(RuntimeError)
+    end
+  end
+
   describe '.should_log' do
     it 'verifies a log message came through' do
       should_log(:info).with("YetiLogger::TestLogger: hello!")

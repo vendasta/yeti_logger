@@ -24,17 +24,7 @@ module YetiLogger::TestHelper
 
   # Plural version of above
   def expect_to_see_log_messages(messages, level = :debug, &block)
-    log_messages = []
-
-    allow(YetiLogger.logger).to receive(level) do |log_line|
-      log_messages << log_line
-    end
-
-    block.call
-
-    # There is no unstub in rspec 3, but the closest to that would be to
-    # continue to stub it, but defer to the original implementation.
-    allow(YetiLogger.logger).to receive(level).and_call_original
+    log_messages = get_log_messages(level, &block)
 
     # Find each message, removing the first occurrence.
     messages.each do |message|
@@ -52,6 +42,47 @@ module YetiLogger::TestHelper
         log_messages.delete_at(log_messages.find_index(message))
       end
     end
+  end
+
+  # Execute a block and ensure that the supplied log message is not among the
+  # messages logged at the specified level.
+  def expect_to_not_see_log_message(message, level = :debug, &block)
+    expect_to_not_see_log_messages([message], level, &block)
+  end
+
+  # Plural version of above
+  def expect_to_not_see_log_messages(messages, level = :debug, &block)
+    log_messages = get_log_messages(level, &block)
+
+    found = messages.find do |message|
+      if message.is_a?(Regexp)
+        log_messages.find do |log_message|
+          log_message =~ message
+        end
+      else
+        log_messages.include?(message)
+      end
+    end
+
+    if found.present?
+      fail "Should not have found #{found.inspect} amongst #{log_messages.inspect}"
+    end
+  end
+
+  def get_log_messages(level = :debug, &block)
+    log_messages = []
+
+    allow(YetiLogger.logger).to receive(level) do |log_line|
+      log_messages << log_line
+    end
+
+    block.call
+
+    # There is no unstub in rspec 3, but the closest to that would be to
+    # continue to stub it, but defer to the original implementation.
+    allow(YetiLogger.logger).to receive(level).and_call_original
+
+    log_messages
   end
 
   def should_log(level = :info)
