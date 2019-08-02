@@ -8,8 +8,6 @@ require 'active_support/core_ext/benchmark'
 require 'active_support/concern'
 require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/object/try'
-require 'active_support/core_ext/hash'
-require 'active_support/core_ext/object/inclusion'
 
 # Mixin module providing Yesware logging functionality including formatting of
 # log message data (exceptions, hashes, etc). Refer to the Readme for further
@@ -79,10 +77,7 @@ module YetiLogger
     # See usage at https://github.com/Yesware/yeti_logger/blob/master/README.md#user-based-logging
     def log_debug(obj = nil, ex = nil)
       # In order if increasing likelihood, so it short-circuits as soon as possible
-      should_log_as_info = defined?(Settings) &&
-        Settings.extra_logging_user_ids.is_a?(Array) &&
-        obj.is_a?(Hash) &&
-        obj.with_indifferent_access[:user_id].to_i.in?(Settings.extra_logging_user_ids)
+      should_log_as_info = YetiLogger.try(:promote_debug_to_info?, obj)
 
       if YetiLogger.logger.level <= Logger::DEBUG || should_log_as_info
         msg = if block_given?

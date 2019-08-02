@@ -109,65 +109,49 @@ describe YetiLogger do
           end
         end
 
-        context "when there's no Settings module," do
+        after(:each) do
+          if described_class.respond_to?(:promote_debug_to_info?)
+            class <<described_class
+              undef_method(:promote_debug_to_info?)
+            end
+          end
+        end
+
+        context "when promote_debug_to_info? isn't configured," do
           before(:each) do
-            if defined?(Settings)
-              Object.send(:remove_const, :Settings)
+            if described_class.respond_to?(:promote_debug_to_info?)
+              class <<described_class
+                undef_method(:promote_debug_to_info?)
+              end
             end
           end
 
           it_behaves_like "it logs at the expected level", :debug
         end
 
-        context "when there's a Settings module" do
-          before(:each) do
-            Settings = Class.new
-          end
-
-          after(:each) do
-            if defined?(Settings)
-              Object.send(:remove_const, :Settings)
-              expect(defined?(Settings)).to be nil
-            end
-          end
-
-          context "when there is an extra_logging_user_ids setting," do
+        context "when promote_debug_to_info? is configured," do
+          context "when promote_debug_to_info is true," do
             before(:each) do
-              allow(Settings).to receive(:extra_logging_user_ids) { extra_logging_user_ids }
-            end
-
-            context "when the extra_logging_user_ids setting is nil," do
-              let(:extra_logging_user_ids) { nil }
-
-              it_behaves_like "it logs at the expected level", :debug
-            end
-
-            context "when the extra_logging_user_ids setting is an empty array," do
-              let(:extra_logging_user_ids) { [] }
-
-              it_behaves_like "it logs at the expected level", :debug
-            end
-
-            context "when the extra_logging_user_ids setting doesn't include the user ID in the payload," do
-              let(:extra_logging_user_ids) { [user_id + 1] }
-
-              it_behaves_like "it logs at the expected level", :debug
-            end
-
-            context "when the extra_logging_user_ids setting includes the user ID in the payload," do
-              let(:extra_logging_user_ids) { [user_id] }
-
-              it_behaves_like "it logs at the expected level", :info
-
-              context "when there's no user_id in the log payload," do
-                it "logs at debug level" do
-                  regex = /#{class_name}:.*#{target_type}.*debuggin/
-                  expect_to_see_log_message(regex, :debug) do
-                    target.log_debug(msg: "#{target_type} debuggin")
-                  end
+              described_class.configure do |config|
+                def config.promote_debug_to_info?(log_hash)
+                  true
                 end
               end
             end
+
+            it_behaves_like "it logs at the expected level", :info
+          end
+
+          context "when promote_debug_to_info is false," do
+            before(:each) do
+              described_class.configure do |config|
+                def config.promote_debug_to_info?(log_hash)
+                  false
+                end
+              end
+            end
+
+            it_behaves_like "it logs at the expected level", :debug
           end
         end
       end
