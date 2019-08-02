@@ -97,10 +97,79 @@ describe YetiLogger do
 
       end
 
-      # There is a lot of debug output, so we can't verify it like we do the other
-      # levels. For now, just validate the method is there.
-      it "can call a #{target_type} debug method" do
-        target.log_debug("#{target_type} debuggin")
+      describe "log_debug" do
+        let(:user_id) { rand(9000) }
+
+        shared_examples_for "it logs at the expected level" do |expected_level|
+          it "logs at #{expected_level} level" do
+            regex = /#{class_name}:.*#{target_type}.*debuggin.*user_id=#{user_id}/
+            expect_to_see_log_message(regex, expected_level) do
+              target.log_debug(msg: "#{target_type} debuggin", user_id: user_id)
+            end
+          end
+        end
+
+        context "when there's no Settings module," do
+          before(:each) do
+            if defined?(Settings)
+              Object.send(:remove_const, :Settings)
+            end
+          end
+
+          it_behaves_like "it logs at the expected level", :debug
+        end
+
+        context "when there's a Settings module" do
+          before(:each) do
+            Settings = Class.new
+          end
+
+          after(:each) do
+            if defined?(Settings)
+              Object.send(:remove_const, :Settings)
+              expect(defined?(Settings)).to be nil
+            end
+          end
+
+          context "when there is an extra_logging_user_ids setting," do
+            before(:each) do
+              allow(Settings).to receive(:extra_logging_user_ids) { extra_logging_user_ids }
+            end
+
+            context "when the extra_logging_user_ids setting is nil," do
+              let(:extra_logging_user_ids) { nil }
+
+              it_behaves_like "it logs at the expected level", :debug
+            end
+
+            context "when the extra_logging_user_ids setting is an empty array," do
+              let(:extra_logging_user_ids) { [] }
+
+              it_behaves_like "it logs at the expected level", :debug
+            end
+
+            context "when the extra_logging_user_ids setting doesn't include the user ID in the payload," do
+              let(:extra_logging_user_ids) { [user_id + 1] }
+
+              it_behaves_like "it logs at the expected level", :debug
+            end
+
+            context "when the extra_logging_user_ids setting includes the user ID in the payload," do
+              let(:extra_logging_user_ids) { [user_id] }
+
+              it_behaves_like "it logs at the expected level", :info
+
+              context "when there's no user_id in the log payload," do
+                it "logs at debug level" do
+                  regex = /#{class_name}:.*#{target_type}.*debuggin/
+                  expect_to_see_log_message(regex, :debug) do
+                    target.log_debug(msg: "#{target_type} debuggin")
+                  end
+                end
+              end
+            end
+          end
+        end
       end
 
       it "can log key value pairs at #{target_type} level" do

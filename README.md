@@ -118,6 +118,10 @@ this behavior, pass in the serialized format for the hash, such as:
     log_info { hash.to_s }
     log_info { hash.to_my_log_format }
 
+### User-based Logging
+
+You can override the app-wide log level for specific user configured in `Settings.extra_logging_user_ids`. Those users will emit logs from `log_debug` calls even if the app's log level is configured as `info`. The user ID is taken from the `user_id` key of the log payload, e.g. `log_debug(user_id: @current_user.id, msg: "this is fine")`, so this won't work with the block syntax. This feature enables us to get more logging for (and hence more insight into) specific users who are experiencing problems, without hardcoding user IDs, setting environment variables and restarting the app, or increasing the overall log volume. Apps that wish to use this feature need to have the [settings-in-redis gem](https://github.com/Yesware/settings-in-redis)  and configure it as necessary ([example](https://github.com/Yesware/gmail-api-server/pull/74)).
+
 ## Test Support
 
 There are a couple helpers provided to support testing of YetiLogger calls. All
