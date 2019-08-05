@@ -97,10 +97,63 @@ describe YetiLogger do
 
       end
 
-      # There is a lot of debug output, so we can't verify it like we do the other
-      # levels. For now, just validate the method is there.
-      it "can call a #{target_type} debug method" do
-        target.log_debug("#{target_type} debuggin")
+      describe "log_debug" do
+        let(:user_id) { rand(9000) }
+
+        shared_examples_for "it logs at the expected level" do |expected_level|
+          it "logs at #{expected_level} level" do
+            regex = /#{class_name}:.*#{target_type}.*debuggin.*user_id=#{user_id}/
+            expect_to_see_log_message(regex, expected_level) do
+              target.log_debug(msg: "#{target_type} debuggin", user_id: user_id)
+            end
+          end
+        end
+
+        after(:each) do
+          if described_class.respond_to?(:promote_debug_to_info?)
+            class <<described_class
+              undef_method(:promote_debug_to_info?)
+            end
+          end
+        end
+
+        context "when promote_debug_to_info? isn't configured," do
+          before(:each) do
+            if described_class.respond_to?(:promote_debug_to_info?)
+              class <<described_class
+                undef_method(:promote_debug_to_info?)
+              end
+            end
+          end
+
+          it_behaves_like "it logs at the expected level", :debug
+        end
+
+        context "when promote_debug_to_info? is configured," do
+          context "when promote_debug_to_info is true," do
+            before(:each) do
+              described_class.configure do |config|
+                def config.promote_debug_to_info?(log_hash)
+                  true
+                end
+              end
+            end
+
+            it_behaves_like "it logs at the expected level", :info
+          end
+
+          context "when promote_debug_to_info is false," do
+            before(:each) do
+              described_class.configure do |config|
+                def config.promote_debug_to_info?(log_hash)
+                  false
+                end
+              end
+            end
+
+            it_behaves_like "it logs at the expected level", :debug
+          end
+        end
       end
 
       it "can log key value pairs at #{target_type} level" do

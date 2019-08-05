@@ -74,14 +74,18 @@ module YetiLogger
   # passed to the log method.
   # Define these methods explicitly allows the use of yield.
   module LogMethods
+    # See usage at https://github.com/Yesware/yeti_logger/blob/master/README.md#user-based-logging
     def log_debug(obj = nil, ex = nil)
-      if YetiLogger.logger.level <= Logger::DEBUG
+      should_log_as_info = YetiLogger.try(:promote_debug_to_info?, obj)
+
+      if YetiLogger.logger.level <= Logger::DEBUG ||
+         (should_log_as_info && YetiLogger.logger.level <= Logger::INFO)
         msg = if block_given?
                 MessageFormatters.build_log_message(log_class_name, yield)
               else
                 MessageFormatters.build_log_message(log_class_name, obj, ex)
               end
-        YetiLogger.logger.send(:debug, msg)
+        YetiLogger.logger.send(should_log_as_info ? :info : :debug, msg)
       end
     end
 
