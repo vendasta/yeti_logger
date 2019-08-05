@@ -125,7 +125,7 @@ You can configure conditions under which to override the app-wide log level for 
 
 ```ruby
 YetiLogger.configure do |config|
-  def config.promote_debug_to_info?(log_hash)
+  def config.always_log?(log_hash)
     Settings.extra_logging_user_ids.is_a?(Array) &&
     log_hash.is_a?(Hash) &&
     log_hash.with_indifferent_access[:user_id].to_i.in?(Settings.extra_logging_user_ids)

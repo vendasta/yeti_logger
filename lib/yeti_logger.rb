@@ -76,7 +76,7 @@ module YetiLogger
   module LogMethods
     # See usage at https://github.com/Yesware/yeti_logger/blob/master/README.md#user-based-logging
     def log_debug(obj = nil, ex = nil)
-      should_log_as_info = YetiLogger.try(:promote_debug_to_info?, obj)
+      should_log_as_info = YetiLogger.try(:always_log?, obj)
 
       if YetiLogger.logger.level <= Logger::DEBUG || should_log_as_info
         msg = if block_given?

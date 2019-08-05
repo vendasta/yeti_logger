@@ -110,18 +110,18 @@ describe YetiLogger do
         end
 
         after(:each) do
-          if described_class.respond_to?(:promote_debug_to_info?)
+          if described_class.respond_to?(:always_log?)
             class <<described_class
-              undef_method(:promote_debug_to_info?)
+              undef_method(:always_log?)
             end
           end
         end
 
-        context "when promote_debug_to_info? isn't configured," do
+        context "when always_log? isn't configured," do
           before(:each) do
-            if described_class.respond_to?(:promote_debug_to_info?)
+            if described_class.respond_to?(:always_log?)
               class <<described_class
-                undef_method(:promote_debug_to_info?)
+                undef_method(:always_log?)
               end
             end
           end
@@ -129,11 +129,11 @@ describe YetiLogger do
           it_behaves_like "it logs at the expected level", :debug
         end
 
-        context "when promote_debug_to_info? is configured," do
+        context "when always_log? is configured," do
           context "when promote_debug_to_info is true," do
             before(:each) do
               described_class.configure do |config|
-                def config.promote_debug_to_info?(log_hash)
+                def config.always_log?(log_hash)
                   true
                 end
               end
@@ -145,7 +145,7 @@ describe YetiLogger do
           context "when promote_debug_to_info is false," do
             before(:each) do
               described_class.configure do |config|
-                def config.promote_debug_to_info?(log_hash)
+                def config.always_log?(log_hash)
                   false
                 end
               end
