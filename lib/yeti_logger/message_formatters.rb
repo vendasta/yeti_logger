@@ -10,7 +10,7 @@
 # Helper class used to format messages for logging. These can be used
 # directly, but are more convenient when used via YetiLogger
 module YetiLogger::MessageFormatters
-  NUM_LINES_OF_EXCEPTIONS = 50
+  NUM_LINES_OF_EXCEPTIONS = 25
 
   # Helper method used to build up a single log message string you can pass to
   # the underlying logger implementation.
@@ -19,20 +19,32 @@ module YetiLogger::MessageFormatters
   # @param exception [Exception] Optional exception to include in the log message
   # @return [String] to log
   def self.build_log_message(klass, obj, exception = nil, backtrace_lines = NUM_LINES_OF_EXCEPTIONS)
-    msg = if obj.is_a?(Hash)
-            if exception
-              format_hash(obj.merge(exception_hash(exception, backtrace_lines)))
-            else
-              format_hash(obj)
-            end
-          elsif exception
-            "#{obj} Exception: #{exception.message} "\
-            "Error Class: #{exception.class.name} "\
-            "#{format_backtrace(exception, backtrace_lines)}"
-          else
-            obj
-          end
-    "#{klass}: #{msg}"
+    # msg = if obj.is_a?(Hash)
+    #         if exception
+    #           format_hash(obj.merge(exception_hash(exception, backtrace_lines)))
+    #         else
+    #           format_hash(obj)
+    #         end
+    #       elsif exception
+    #         "#{obj} Exception: #{exception.message} "\
+    #         "Error Class: #{exception.class.name} "\
+    #         "#{format_backtrace(exception, backtrace_lines)}"
+    #       else
+    #         obj
+    #       end
+    # "#{klass}: #{msg}"
+
+    msg = {}
+    msg[:cls] = klass.to_s
+    case obj
+    when Hash
+      msg.merge!(obj)
+    else
+      msg[:msg] = obj
+    end
+    msg.merge!(exception_hash(exception, backtrace_lines)) if exception
+
+    msg
   end
 
   # Format a Hash into key=value pairs, separated by whitespace.
@@ -73,11 +85,11 @@ module YetiLogger::MessageFormatters
   # @param exception [Exception] The Exception you want to create a hash for.
   # @param lines [Integer] How many lines of the backtrace to keep.
   # @return [Hash] Hash with exception details in it.
-  def self.exception_hash(exception, lines = 20)
+  def self.exception_hash(exception, lines = NUM_LINES_OF_EXCEPTIONS)
     {
-      :error => exception.message,
-      :error_class => exception.class.name,
-      :backtrace => format_backtrace(exception, lines)
+      :err => exception.message,
+      :err_cls => exception.class.name,
+      :bt => format_backtrace(exception, lines)
     }
   end
 
@@ -86,8 +98,8 @@ module YetiLogger::MessageFormatters
   # @param exception [Exception] The Exception you want to convert to a string
   # @param lines [Integer] How many lines of the backtrace to keep.
   # @return [String] String of the backtrace.
-  def self.format_backtrace(exception, lines = 20)
-    exception.try(:backtrace).try(:take, lines).try(:join, ', ').inspect
+  def self.format_backtrace(exception, lines = NUM_LINES_OF_EXCEPTIONS)
+    exception.try(:backtrace).try(:take, lines).try(:join, ', ')
   end
 
 end
