@@ -10,7 +10,7 @@
 # Helper class used to format messages for logging. These can be used
 # directly, but are more convenient when used via YetiLogger
 module YetiLogger::MessageFormatters
-  NUM_LINES_OF_EXCEPTIONS = 25
+  NUM_LINES_OF_EXCEPTIONS = 20
 
   # Helper method used to build up a single log message string you can pass to
   # the underlying logger implementation.
@@ -34,17 +34,17 @@ module YetiLogger::MessageFormatters
     #       end
     # "#{klass}: #{msg}"
 
-    msg = {}
-    msg[:cls] = klass.to_s
+    line = {}
+    line[:cls] = klass.to_s
     case obj
     when Hash
-      msg.merge!(obj)
+      line.merge!(obj)
     else
-      msg[:msg] = obj
+      line[:msg] = obj
     end
-    msg.merge!(exception_hash(exception, backtrace_lines)) if exception
+    line.merge!(exception_hash(exception, backtrace_lines)) if exception
 
-    msg
+    line
   end
 
   # Format a Hash into key=value pairs, separated by whitespace.
@@ -99,7 +99,7 @@ module YetiLogger::MessageFormatters
   # @param lines [Integer] How many lines of the backtrace to keep.
   # @return [String] String of the backtrace.
   def self.format_backtrace(exception, lines = NUM_LINES_OF_EXCEPTIONS)
-    exception.try(:backtrace).try(:take, lines).try(:join, ', ')
+    exception.try(:backtrace).try(:take, lines)
   end
 
 end
