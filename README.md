@@ -2,7 +2,7 @@
 
 Provides standardized logging across Yesware apps.
 
-[![Ruby](https://github.com/Yesware/yeti_logger/actions/workflows/ruby.yml/badge.svg)](https://github.com/Yesware/yeti_logger/actions/workflows/ruby.yml)
+[![Ruby](https://github.com/Yesware/yeti_logger/actions/workflows/ruby.yml/badge.svg?branch=master)](https://github.com/Yesware/yeti_logger/actions/workflows/ruby.yml)
 
 
 ## Installation
