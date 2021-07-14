@@ -2,7 +2,8 @@
 
 Provides standardized logging across Yesware apps.
 
-[![Build Status](https://travis-ci.org/Yesware/yeti_logger.svg?branch=master)](https://travis-ci.org/Yesware/yeti_logger)
+[![Ruby](https://github.com/Yesware/yeti_logger/actions/workflows/ruby.yml/badge.svg?branch=master)](https://github.com/Yesware/yeti_logger/actions/workflows/ruby.yml)
+
 
 ## Installation
 
