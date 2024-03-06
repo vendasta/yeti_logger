@@ -106,6 +106,17 @@ is a hash, then the exception in injected into the hash and printed as
 additional `key=value` pairs. Classname, message and backtrace are included in
 the message.
 
+### Custom formatter
+To add a set of tags to every log output by the underlying logger, initialize
+`YetiLogger::CustomFormatter` and assign it to your logger's formatter. Pass a
+hash to the initializer mapping the name of the tags to the proc that evaluates
+to their value. The procs are evaluated lazily when the log generated.
+
+    Rails.logger.formatter = CustomFormatter.new({
+                                                "thread_id": -> { Thread.current.object_id.to_s(36) },
+                                                "trace_id": -> { OpenTelemetry::Trace.current_span ? OpenTelemetry::Trace.current_span.context.hex_trace_id : "0" },
+                                                })
+
 ### Nested Hashes
 
 For hash logging, each key and value are converted to strings which means
