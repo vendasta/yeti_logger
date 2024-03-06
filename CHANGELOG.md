@@ -1,5 +1,8 @@
 # yeti_logger changelog
 
+## v3.3.0
+- Add custom rails logger formatter
+
 ## v3.2.0
 - Added configuration to override debug logging for specific users
 
