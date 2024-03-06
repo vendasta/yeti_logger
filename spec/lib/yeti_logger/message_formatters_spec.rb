@@ -1,3 +1,4 @@
+require "active_support"
 require 'spec_helper.rb'
 
 # Class used for class and instance level testing
