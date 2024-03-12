@@ -1,5 +1,8 @@
 # yeti_logger changelog
 
+## v3.3.1
+- CustomFormatter uses Time.now instead of Time.now.utc
+
 ## v3.3.0
 - Add custom rails logger formatter
 
