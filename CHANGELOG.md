@@ -1,5 +1,8 @@
 # yeti_logger changelog
 
+## v3.3.2
+- CustomFormatter does not include timestamp in log in production and staging environments
+
 ## v3.3.1
 - CustomFormatter uses Time.now instead of Time.now.utc
 

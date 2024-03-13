@@ -18,11 +18,11 @@ class YetiLogger::CustomFormatter
   # @param progname [String] unused
   # @param msg [String] - log body
   def call(severity, time, progname, msg)
-    timestamp = "#{Time.now.iso8601(3)}"
+    timestamp = %w(production staging).include?(ENV['RAILS_ENV']) ? "" : "#{Time.now.iso8601(3)} "
     pid = Process.pid
     msg = msg.inspect unless msg.is_a?(String)
     msg = "#{msg}\n" unless msg[-1] == ?\n
-    log_str = "#{timestamp} pid=#{pid}"
+    log_str = "#{timestamp}pid=#{pid}"
 
     tag_str = @tags.map { |k, v|
       value = v.call
