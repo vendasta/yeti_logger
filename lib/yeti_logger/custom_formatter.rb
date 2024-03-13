@@ -18,7 +18,7 @@ class YetiLogger::CustomFormatter
   # @param progname [String] unused
   # @param msg [String] - log body
   def call(severity, time, progname, msg)
-    timestamp = Time.now.utc.iso8601(3)
+    timestamp = "#{Time.now.iso8601(3)}"
     pid = Process.pid
     msg = msg.inspect unless msg.is_a?(String)
     msg = "#{msg}\n" unless msg[-1] == ?\n
