@@ -1,5 +1,8 @@
 # yeti_logger changelog
 
+## v3.3.3
+- Replace deprecated `active_support/core_ext/benchmark` with Ruby's standard `Benchmark` library (fixes Rails 8.2 deprecation warning)
+
 ## v3.3.2
 - CustomFormatter does not include timestamp in log in production and staging environments
 

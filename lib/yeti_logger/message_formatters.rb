@@ -1,12 +1,3 @@
-# require 'logger'
-# require 'yeti_logger/version'
-# require 'yeti_logger/configuration'
-# require 'active_support/core_ext/benchmark'
-# require 'active_support/concern'
-# require 'active_support/core_ext/object/blank'
-# require 'active_support/core_ext/object/try'
-
-
 # Helper class used to format messages for logging. These can be used
 # directly, but are more convenient when used via YetiLogger
 module YetiLogger::MessageFormatters

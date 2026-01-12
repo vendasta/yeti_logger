@@ -4,7 +4,7 @@ require 'yeti_logger/constants'
 require 'yeti_logger/configuration'
 require 'yeti_logger/wrapped_logger'
 require 'yeti_logger/message_formatters'
-require 'active_support/core_ext/benchmark'
+require 'benchmark'
 require 'active_support/concern'
 require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/object/try'
@@ -151,9 +151,7 @@ module YetiLogger
   end
 
   def log_time(action, level = :info)
-    ms = Benchmark.ms do
-      yield
-    end
+    ms = Benchmark.realtime { yield } * 1000
     YetiLogger.logger.send(level,
                            MessageFormatters.build_log_message(self.class.name,
                                                                { action: action,
