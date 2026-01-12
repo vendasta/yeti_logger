@@ -256,6 +256,19 @@ describe YetiLogger do
         sleep 0.01
       end
     end
+
+    it "logs elapsed time in milliseconds" do
+      expect(YetiLogger.logger).to receive(:info) do |msg|
+        expect(msg).to match(/time_ms=\d+/)
+        # Verify it's roughly 100ms (with some tolerance for CI variance)
+        ms = msg.match(/time_ms=(\d+)/)[1].to_i
+        expect(ms).to be_between(80, 200)
+      end
+
+      instance.log_time("query_db") do
+        sleep 0.1
+      end
+    end
   end
 
   describe '#as_logger' do
