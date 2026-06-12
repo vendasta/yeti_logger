@@ -1,0 +1,6 @@
+services:
+  - name: yeti_logger
+    owner: honey-badger
+    language: ruby
+    nonServiceType: library
+    description: "Standardized logging using key=value pairs"
