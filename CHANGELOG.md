@@ -1,5 +1,8 @@
 # yeti_logger changelog
 
+## v3.3.4
+- Declare `benchmark` and `logger` as runtime dependencies. Ruby 4.0 ships both as bundled gems rather than default gems, so under Bundler `require 'benchmark'` raised LoadError unless the app's own Gemfile listed it.
+
 ## v3.3.3
 - Replace deprecated `active_support/core_ext/benchmark` with Ruby's standard `Benchmark` library (fixes Rails 8.2 deprecation warning)
 
